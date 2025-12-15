@@ -1,0 +1,47 @@
+---
+title: "Urban-rural comparison"
+format: html
+---
+
+
+```{r}
+library(tidyverse)
+#devtools::install_git(url="https://github.com/levante-framework/rlevante")
+library(rlevante) 
+```
+
+
+```{r}
+dataset_spec <- list(list(name = "pilot_uniandes_co_rural_processed:bxgv:v1_0", 
+                          version = "current"),
+                     list(name = "pilot_uniandes_co_bogota_processed:d0c5:v1_0", 
+                          version = "current")) 
+                     
+# table = dataset.table("runs:8fp9")
+# table = dataset.table("runs_scored:6bsc")
+
+scores <- rlevante::get_scores(dataset_spec)
+
+
+```
+
+ROAR cleanup
+
+```{r}
+scores$task_id <- str_replace(scores$task_id, "-es", "")
+
+scores <- filter(scores, age > 5, age < 13)
+```
+
+
+```{r}
+ggplot(scores, aes(x = age, y = score, col = dataset)) + 
+  geom_point(alpha = .1) + 
+  geom_smooth(method = "lm") + 
+  facet_wrap(~task_id) + 
+  theme_classic() + 
+  ggthemes::scale_color_solarized() + 
+  theme(legend.position = "bottom") 
+  
+```
+)
